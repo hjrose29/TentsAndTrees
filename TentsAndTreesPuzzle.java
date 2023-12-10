@@ -11,8 +11,8 @@ public class TentsAndTreesPuzzle extends JFrame{
 
     private JButton[][] gridButtons;
     private JLabel[][] totals;  
-    private static int gridSize = 3; // Change the grid size as needed
-    private int[][] solution;
+    private static int gridSize = 6; // Change the grid size as needed
+    private static int[][] solution;
     private int[][] gameState;
 
     private static final String TREE_IMAGE_PATH = "./assets/tree-icon.png";
@@ -33,38 +33,38 @@ public class TentsAndTreesPuzzle extends JFrame{
         }
         createGridButtons(pg, gameState);
         
-                // Set up the layout
-         JPanel gridPanel = new JPanel(new GridLayout(gridSize, gridSize));
-         for (int i = 0; i < gridSize; i++) {
-             for (int j = 0; j < gridSize; j++) {
-                 gridPanel.add(gridButtons[i][j]);
-             }
-         }
+        // Set up the layout
+        JPanel gridPanel = new JPanel(new GridLayout(gridSize, gridSize));
+        for (int i = 0; i < gridSize; i++) {
+            for (int j = 0; j < gridSize; j++) {
+                gridPanel.add(gridButtons[i][j]);
+            }
+        }
 
-         JPanel totalsPanel = new JPanel(new GridLayout(gridSize + 1, gridSize + 1)); // +1 for row and column totals
+        JPanel totalsPanel = new JPanel(new GridLayout(gridSize + 1, gridSize + 1)); // +1 for row and column totals
 
          // Add column totals
-         totalsPanel.add(new JLabel());  // Empty corner cell
-         for (int i = 0; i < gridSize; i++) {
-             System.out.println(totals[0][i]);
-             totalsPanel.add(totals[0][i]);
-         }
+        totalsPanel.add(new JLabel());  // Empty corner cell
+        for (int i = 0; i < gridSize; i++) {
+            System.out.println(totals[0][i]);
+            totalsPanel.add(totals[0][i]);
+        }
 
          // Add row and grid cells
-         for (int i = 0; i < gridSize; i++) {
-             totalsPanel.add(totals[1][i]);  // Row total
-             for (int j = 0; j < gridSize; j++) {
-                 totalsPanel.add(gridButtons[i][j]);
-             }
-         }
+        for (int i = 0; i < gridSize; i++) {
+            totalsPanel.add(totals[1][i]);  // Row total
+            for (int j = 0; j < gridSize; j++) {
+                totalsPanel.add(gridButtons[i][j]);
+            }
+        }
 
-         setLayout(new BorderLayout());
-         add(gridPanel, BorderLayout.CENTER);
-         add(totalsPanel, BorderLayout.SOUTH);
+        setLayout(new BorderLayout());
+        add(gridPanel, BorderLayout.CENTER);
+        add(totalsPanel, BorderLayout.SOUTH);
 
-         pack();
+        pack();
          setLocationRelativeTo(null); // Center the frame
-         setVisible(true);
+        setVisible(true);
     }
     private JLabel[][] createTotals(int[][] pgTotals) {
         printSolution(pgTotals);
@@ -131,7 +131,7 @@ public class TentsAndTreesPuzzle extends JFrame{
                     @Override
                     public void actionPerformed(ActionEvent e) {
                         // Add handleButtonClick
-      
+
                         handleButtonClick(pg, row, col, field);
                     }
                 });
@@ -140,6 +140,9 @@ public class TentsAndTreesPuzzle extends JFrame{
                 gridButtons[i][j] = button;
             }
         }
+    }
+    public static int[][] getSolution(){
+        return solution;
     }
     private void handleButtonClick(PuzzleGenerator pg, int row, int col, int[][] field) {
         if (field[row][col] == 2) {
@@ -154,14 +157,14 @@ public class TentsAndTreesPuzzle extends JFrame{
             gridButtons[row][col].setIcon(tentIcon);
             field[row][col] = 2;
             
-           
+
         }
 
-        if(checkForWin(solution, field)) {System.out.println("WIN"); System.exit(0);};
+        if(checkForWin(solution, field)) {System.out.println("WIN"); };
         
         //check for win
     }
-    private boolean isNextToTree(int row, int col, int[][] field){
+    public static boolean isNextToTree(int row, int col, int[][] field){
 
         if(row + 1 < gridSize && field[row + 1][col] == 1) return true;
         else if(col -1  >= 0 && field[row][col - 1] == 1) return true;
@@ -170,11 +173,11 @@ public class TentsAndTreesPuzzle extends JFrame{
         return false;
     }
 
-    private boolean checkForWin(int[][] solution, int[][] field){
+    public static boolean checkForWin(int[][] solution, int[][] field){
         for(int i = 0; i < gridSize; i++){
             for(int j = 0; j < gridSize; j++){
                 if(solution[i][j] != field[i][j]){System.out.println("Solution " + solution[i][j] + "Index "
-                 + i + j + "Field " + field[i][j] + "Index " + i + j); return false;
+                + i + j + "Field " + field[i][j] + "Index " + i + j); return false;
             }}
         }
         System.out.println("Win");

@@ -21,10 +21,10 @@ public class PuzzleGenerator{
         Double rand;
         for(int i = 0; i < out.length;i++){
             for(int j = 0; j < out[0].length;j++){
-                 rand = Math.random();
-                 if(rand > .5 && isValidTent(i, j, out)){
+                rand = Math.random();
+                if(rand > .5 && isValidTent(i, j, out)){
                     out[i][j] = 2;
-                 }
+                }
 
             }
         }
