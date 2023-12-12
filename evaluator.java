@@ -1,9 +1,9 @@
 import java.util.ArrayList;
 
-public class evaluator {
+public class Evaluator{
     PuzzleGenerator pg;
 
-    public evaluator(PuzzleGenerator pg){
+    public Evaluator(PuzzleGenerator pg){
         this.pg = pg;
     }
 
@@ -20,7 +20,7 @@ public class evaluator {
             int [][] solTotals = pg.getRowTotals(gameState.length, gameState.length, solution);
             double diff = euclideanDistance(curTotals[0], solTotals[0]) + euclideanDistance(curTotals[1], solTotals[1]);
             if(diff < curDiff){
-                
+
             }
             
 
@@ -35,7 +35,11 @@ public class evaluator {
         ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
         for(int i = 0; i < gameState.length; i++){
             for(int j = 0; j < gameState[0].length; j++){
-                if(pg.isValidTent(i, j, gameState) && TentsAndTreesPuzzle.isNextToTree(i, j, gameState)){
+                if(gameState[i][j] == 2){
+                    int[] move = {i, j};
+                    possibleMoves.add(move);
+                }
+                else if(pg.isValidTent(i, j, gameState) && TentsAndTreesPuzzle.isNextToTree(i, j, gameState)){
                     int[] move = {i, j};
                     possibleMoves.add(move);
                 }
@@ -44,7 +48,24 @@ public class evaluator {
         return possibleMoves.get((int)Math.floor(Math.random() * ((possibleMoves.size() - 1) + 1)));
     }
 
-    public double euclideanDistance(int[] q, int[] p){
+    public ArrayList<int[]> validMoves(int[][] gameState){
+        ArrayList<int[]> possibleMoves = new ArrayList<int[]>();
+        for(int i = 0; i < gameState.length; i++){
+            for(int j = 0; j < gameState[0].length; j++){
+                if(gameState[i][j] == 2){
+                    int[] move = {i, j};
+                    possibleMoves.add(move);
+                }
+                else if(pg.isValidTent(i, j, gameState) && TentsAndTreesPuzzle.isNextToTree(i, j, gameState)){
+                    int[] move = {i, j};
+                    possibleMoves.add(move);
+                }
+            }
+        }
+        return possibleMoves;
+    }
+
+    public static double euclideanDistance(int[] q, int[] p){
         int out = 0;
         if(q.length != p.length) return -1;
         for(int i = 0; i < q.length; i++){

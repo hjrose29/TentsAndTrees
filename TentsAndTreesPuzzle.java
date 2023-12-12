@@ -1,3 +1,5 @@
+import javax.print.attribute.PrintServiceAttribute;
+import javax.print.attribute.standard.PageRanges;
 import javax.swing.*;
 import javax.xml.xpath.XPathExpressionException;
 
@@ -11,7 +13,7 @@ public class TentsAndTreesPuzzle extends JFrame{
 
     private JButton[][] gridButtons;
     private JLabel[][] totals;  
-    private static int gridSize = 6; // Change the grid size as needed
+    private static int gridSize; // Change the grid size as needed
     private static int[][] solution;
     private int[][] gameState;
 
@@ -166,9 +168,9 @@ public class TentsAndTreesPuzzle extends JFrame{
     }
     public static boolean isNextToTree(int row, int col, int[][] field){
 
-        if(row + 1 < gridSize && field[row + 1][col] == 1) return true;
-        else if(col -1  >= 0 && field[row][col - 1] == 1) return true;
-        else if(col + 1 < gridSize && field[row][col + 1] == 1) return true;
+        if(row + 1 < field.length && field[row + 1][col] == 1) return true;
+        else if(col - 1  >= 0 && field[row][col - 1] == 1) return true;
+        else if(col + 1 < field.length && field[row][col + 1] == 1) return true;
         else if(row - 1 >= 0 && field[row - 1][col] == 1) return true;
         return false;
     }
@@ -203,14 +205,53 @@ public class TentsAndTreesPuzzle extends JFrame{
     }
 
 
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new TentsAndTreesPuzzle();
-            }
-        });
+    //     SwingUtilities.invokeLater(new Runnable() {
+    //         @Override
+    //         public void run() {
+    //             new TentsAndTreesPuzzle();
+    //         }
+    //     });
+
+        
+
+    // }
+
+    public static void main(String[] args) {
+        int gridSize = 4;
+        int depth = 4;
+        PuzzleGenerator pg = new PuzzleGenerator(gridSize, gridSize);
+        int[][] solution = pg.field;
+        Evaluator ev = new Evaluator(pg);
+        GameTreeBuilder builder = new GameTreeBuilder(pg, depth);
+        int[][] gameState = pg.getInitialGameState(solution);
+        
+        TreeNode root = new TreeNode(gameState, new int[0], gridSize);
+
+        builder.buildTree(root, ev);
+        System.out.println("INIT STATE");
+        printSolution(root.gameState);
+        System.out.println();
+        printSolution(pg.field);
+
+        // for(int i = 0; i < 2; i++){
+        //     builder.buildTree(root, ev);
+        //     int[] move = builder.makeDecision(root);
+            
+        //     for(int j = 0; j < 2; j++){
+        //         System.out.print(move[j]);
+        //     }
+        //     System.out.println();
+
+        //     int[][] newState = builder.applyMove(gameState, move);
+        //     printSolution(newState);
+        //     if(TentsAndTreesPuzzle.checkForWin(solution, newState)) System.out.println("WIN");
+        //     root = new TreeNode(newState, new int[0], gridSize);
+        // }
+
+        builder.buildTree(root, ev);
+        builder.printSubtree(1, root);
 
     }
 

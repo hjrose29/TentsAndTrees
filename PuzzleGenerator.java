@@ -1,8 +1,8 @@
-import java.util.random.*;
+
 public class PuzzleGenerator{
     int[][] field;
     PuzzleGenerator(int x, int y){
-        field = placeTrees(placeTents(initializeGame(x, y)));
+        this.field = placeTrees(placeTents(initializeGame(x, y)));
     }   
     //Initialize empty field
     public int[][] initializeGame(int x, int y){
