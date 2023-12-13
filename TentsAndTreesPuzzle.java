@@ -75,6 +75,12 @@ public class TentsAndTreesPuzzle extends JFrame{
         System.out.println(root.children.size());
 
         ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
+
+        System.out.println("Winning Path");
+        for(TreeNode node : winningPath){
+            printNodeDetails(node);
+        }
+
         ImageIcon hintIcon = resizeImageIcon(HINT_IMAGE_PATH, 30, 30);
 
         int[] firstMove = winningPath.get(1).move;
