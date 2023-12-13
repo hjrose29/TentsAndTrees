@@ -59,9 +59,9 @@ public class PuzzleGenerator{
     }
 
     public int[][] getInitialGameState(int[][] field){
-        int[][] out = new int[field.length][field[0].length];
-        for(int i = 0; i < out.length; i++){
-            for(int j = 0; j < out[0].length; j++){
+        int[][] out = new int[field.length][field.length];
+        for(int i = 0; i < field.length; i++){
+            for(int j = 0; j < field.length; j++){
                 out[i][j] = field[i][j];
             }
         }

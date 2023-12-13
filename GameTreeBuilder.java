@@ -77,57 +77,6 @@ public class GameTreeBuilder{
         currentPath.remove(currentPath.size() - 1); // Remove the current node as it didn't lead to a winning path
         return null; // No winning path found in this subtree
     }
-
-    // public ArrayList<TreeNode> findBestPath(TreeNode root) {
-    //     ArrayList<TreeNode> winningPath = new ArrayList<>();
-    //     double bestScore = Integer.MIN_VALUE;
-
-    //     for (TreeNode child : root.children) {
-    //         ArrayList<TreeNode> currentPath = new ArrayList<>();
-    //         currentPath.add(root);  // Start the path with the root
-    //         currentPath.add(child);
-    //         double childScore = miniMax(child, Double.MIN_VALUE, Double.MAX_VALUE, false, currentPath);
-
-    //         if (childScore > bestScore) {
-    //             bestScore = childScore;
-    //             winningPath = new ArrayList<>(currentPath);
-    //         }
-    //     }
-
-    //     return winningPath;
-    // }
-
-    // private double miniMax(TreeNode node, double alpha, double beta, boolean isMaximizing, ArrayList<TreeNode> currentPath) {
-    //     if (node.children.isEmpty()) {
-    //         return node.score;
-    //     }
-
-    //     double bestScore = isMaximizing ? Double.MIN_VALUE : Double.MAX_VALUE;
-
-    //     for (TreeNode child : node.children) {
-    //         currentPath.add(child);
-    //         double score = miniMax(child, alpha, beta, !isMaximizing, currentPath);
-    //         currentPath.remove(currentPath.size() - 1);
-
-    //         if (isMaximizing) {
-    //             bestScore = Math.max(bestScore, score);
-    //             alpha = Math.max(alpha, bestScore);
-    //         } else {
-    //             bestScore = Math.min(bestScore, score);
-    //             beta = Math.min(beta, bestScore);
-    //         }
-
-    //         if (beta <= alpha) {
-    //             break; // Prune the remaining branches
-    //         }
-    //     }
-
-    //     return bestScore;
-    // }
-    
-    
-
-
     
 
     public int[][] applyMove(int[][] inState, int[] move){

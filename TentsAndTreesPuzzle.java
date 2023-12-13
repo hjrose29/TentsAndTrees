@@ -2,25 +2,31 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class TentsAndTreesPuzzle extends JFrame{
 
     private JButton[][] gridButtons;
     private JLabel[][] totals;  
-    private static int gridSize; // Change the grid size as needed
-    private static int[][] solution;
+    private int gridSize; // Change the grid size as needed
+    private int[][] solution;
     private int[][] gameState;
-
+    private TreeNode root;
+    
     private static final String TREE_IMAGE_PATH = "./assets/tree-icon.png";
     private static final String TENT_IMAGE_PATH = "./assets/tent-icon.png";
+    private static final String HINT_IMAGE_PATH = "./assets/hint-icon.png";
 
 
-    public TentsAndTreesPuzzle(){
+
+    public TentsAndTreesPuzzle(int gridSize){
+        this.gridSize = gridSize;
         setTitle("Tents and Trees Puzzle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         PuzzleGenerator pg = new PuzzleGenerator(gridSize, gridSize);
         solution = pg.field; // 0: Empty, 1: Tree, 2: Tent
+        System.out.println(solution.length);
         gameState = pg.getInitialGameState(solution);
         totals = createTotals(pg.getRowTotals(gridSize, gridSize, solution));
         for(int i = 0; i < gridSize; i++){
@@ -28,7 +34,8 @@ public class TentsAndTreesPuzzle extends JFrame{
                 if(gameState[i][j] == 2) gameState[i][j] = 0;
             }
         }
-        createGridButtons(pg, gameState);
+        GameTreeBuilder builder = new GameTreeBuilder(pg);
+        createGridButtons(pg, gameState, builder);
         
         // Set up the layout
         JPanel gridPanel = new JPanel(new GridLayout(gridSize, gridSize));
@@ -54,6 +61,17 @@ public class TentsAndTreesPuzzle extends JFrame{
                 totalsPanel.add(gridButtons[i][j]);
             }
         }
+
+        
+    
+        TreeNode root = new TreeNode(gameState, new int[0], 0);
+        builder.buildFullTree(root);
+        ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
+        ImageIcon hintIcon = resizeImageIcon(HINT_IMAGE_PATH, 30, 30);
+
+        int[] firstMove = winningPath.get(1).move;
+    
+        gridButtons[firstMove[0]][firstMove[1]].setIcon(hintIcon);
 
         setLayout(new BorderLayout());
         add(gridPanel, BorderLayout.CENTER);
@@ -97,7 +115,7 @@ public class TentsAndTreesPuzzle extends JFrame{
         }
     }
 
-    private void createGridButtons(PuzzleGenerator pg, int[][] field) {
+    private void createGridButtons(PuzzleGenerator pg, int[][] field, GameTreeBuilder builder) {
         gridButtons = new JButton[gridSize][gridSize];
 
         for (int i = 0; i < gridSize; i++) {
@@ -129,7 +147,7 @@ public class TentsAndTreesPuzzle extends JFrame{
                     public void actionPerformed(ActionEvent e) {
                         // Add handleButtonClick
 
-                        handleButtonClick(pg, row, col, field);
+                        handleButtonClick(pg, row, col, field, builder);
                     }
                 });
                 
@@ -138,26 +156,37 @@ public class TentsAndTreesPuzzle extends JFrame{
             }
         }
     }
-    public static int[][] getSolution(){
+    public int[][] getSolution(){
         return solution;
     }
-    private void handleButtonClick(PuzzleGenerator pg, int row, int col, int[][] field) {
+    private void handleButtonClick(PuzzleGenerator pg, int row, int col, int[][] field, GameTreeBuilder builder) {
         if (field[row][col] == 2) {
 
             // Tent already placed, remove it
             field[row][col] = 0;
             gridButtons[row][col].setIcon(null);
-            solution[row][col] = 0;
+
+            if(checkForWin(solution, field)){ setTitle("You win!"); return;}
+            
         } else if (pg.isValidTent(row, col, field) && isNextToTree(row, col, solution)) {
             // Place a tent
             ImageIcon tentIcon = resizeImageIcon(TENT_IMAGE_PATH, 30, 30);
             gridButtons[row][col].setIcon(tentIcon);
             field[row][col] = 2;
             
-
+            //Suggest Next Move
+            root = new TreeNode(field, new int[0], 0);
+            builder.buildFullTree(root);
+            ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
+            if(checkForWin(solution, field)){ setTitle("You win!"); return;}
+            if(winningPath.size() > 0){
+                ImageIcon hintIcon = resizeImageIcon(HINT_IMAGE_PATH, 30, 30);
+                int[] firstMove = winningPath.get(1).move;
+                gridButtons[firstMove[0]][firstMove[1]].setIcon(hintIcon);
+            }
         }
 
-        if(checkForWin(solution, field)) {System.out.println("WIN"); };
+        
         
         //check for win
     }
@@ -198,18 +227,18 @@ public class TentsAndTreesPuzzle extends JFrame{
     }
 
 
-    // public static void main(String[] args) {
+    public static void main(String[] args) {
 
-    //     SwingUtilities.invokeLater(new Runnable() {
-    //         @Override
-    //         public void run() {
-    //             new TentsAndTreesPuzzle();
-    //         }
-    //     });
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new TentsAndTreesPuzzle(5);
+            }
+        });
 
         
 
-    // }
+    }
 
     public static String formatArr(int[] arr){
         String out = "[ ";
@@ -221,30 +250,30 @@ public class TentsAndTreesPuzzle extends JFrame{
     }
 
     
-    public static void main(String[] args) {
+    // public static void main(String[] args) {
         
-            int gridSize = 5;
+    //         int gridSize = 5;
 
-            PuzzleGenerator pg = new PuzzleGenerator(gridSize, gridSize);
-            int[][] solution = pg.field;
-            int[][] gameState = pg.getInitialGameState(solution);
+    //         PuzzleGenerator pg = new PuzzleGenerator(gridSize, gridSize);
+    //         int[][] solution = pg.field;
+    //         int[][] gameState = pg.getInitialGameState(solution);
     
-            GameTreeBuilder builder = new GameTreeBuilder(pg);
+    //         GameTreeBuilder builder = new GameTreeBuilder(pg);
     
-            TreeNode root = new TreeNode(gameState, new int[0], 0);
-            builder.buildFullTree(root);
+    //         TreeNode root = new TreeNode(gameState, new int[0], 0);
+    //         builder.buildFullTree(root);
     
-            ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
+    //         ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
     
-            if (winningPath != null) {
-                System.out.println("Found winning path:");
-                for (TreeNode node : winningPath) {
-                    printNodeDetails(node);
-                }
-            } else {
-                System.out.println("No winning path found.");
-            }
-        }
+    //         if (winningPath != null) {
+    //             System.out.println("Found winning path:");
+    //             for (TreeNode node : winningPath) {
+    //                 printNodeDetails(node);
+    //             }
+    //         } else {
+    //             System.out.println("No winning path found.");
+    //         }
+    //     }
     
         private static void printNodeDetails(TreeNode node) {
             // Implement how you want to print details of a node
@@ -254,11 +283,6 @@ public class TentsAndTreesPuzzle extends JFrame{
             System.out.println("Move: " + TentsAndTreesPuzzle.formatArr(node.move));
             System.out.println("Score: " + node.score);
             System.out.println("--------------");
-        
-
     }
-
-
-    
 
 }
