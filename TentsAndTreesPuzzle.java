@@ -1,13 +1,8 @@
-import javax.print.attribute.PrintServiceAttribute;
-import javax.print.attribute.standard.PageRanges;
 import javax.swing.*;
-import javax.xml.xpath.XPathExpressionException;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.text.Format.Field;
+import java.util.ArrayList;
 
 public class TentsAndTreesPuzzle extends JFrame{
 
@@ -176,18 +171,16 @@ public class TentsAndTreesPuzzle extends JFrame{
     }
 
     public static boolean checkForWin(int[][] solution, int[][] field){
-        for(int i = 0; i < gridSize; i++){
-            for(int j = 0; j < gridSize; j++){
-                if(solution[i][j] != field[i][j]){System.out.println("Solution " + solution[i][j] + "Index "
-                + i + j + "Field " + field[i][j] + "Index " + i + j); return false;
-            }}
+        for(int i = 0; i < solution.length; i++){
+            for(int j = 0; j < solution.length; j++){
+                if(solution[i][j] != field[i][j]) return false;
+
+            }
         }
-        System.out.println("Win");
         return true;
         
 
     }
-
 
     private ImageIcon resizeImageIcon(String imagePath, int width, int height) {
         ImageIcon icon = new ImageIcon(imagePath);
@@ -218,40 +211,50 @@ public class TentsAndTreesPuzzle extends JFrame{
 
     // }
 
+    public static String formatArr(int[] arr){
+        String out = "[ ";
+        for(int i = 0; i < arr.length; i++){
+            if(i == arr.length - 1) out += arr[i] + "]";
+            else out += arr[i] + ",";
+        }
+        return out;
+    }
+
+    
     public static void main(String[] args) {
-        int gridSize = 4;
-        int depth = 4;
-        PuzzleGenerator pg = new PuzzleGenerator(gridSize, gridSize);
-        int[][] solution = pg.field;
-        Evaluator ev = new Evaluator(pg);
-        GameTreeBuilder builder = new GameTreeBuilder(pg, depth);
-        int[][] gameState = pg.getInitialGameState(solution);
         
-        TreeNode root = new TreeNode(gameState, new int[0], gridSize);
+            int gridSize = 5;
 
-        builder.buildTree(root, ev);
-        System.out.println("INIT STATE");
-        printSolution(root.gameState);
-        System.out.println();
-        printSolution(pg.field);
-
-        // for(int i = 0; i < 2; i++){
-        //     builder.buildTree(root, ev);
-        //     int[] move = builder.makeDecision(root);
-            
-        //     for(int j = 0; j < 2; j++){
-        //         System.out.print(move[j]);
-        //     }
-        //     System.out.println();
-
-        //     int[][] newState = builder.applyMove(gameState, move);
-        //     printSolution(newState);
-        //     if(TentsAndTreesPuzzle.checkForWin(solution, newState)) System.out.println("WIN");
-        //     root = new TreeNode(newState, new int[0], gridSize);
-        // }
-
-        builder.buildTree(root, ev);
-        builder.printSubtree(1, root);
+            PuzzleGenerator pg = new PuzzleGenerator(gridSize, gridSize);
+            int[][] solution = pg.field;
+            int[][] gameState = pg.getInitialGameState(solution);
+    
+            GameTreeBuilder builder = new GameTreeBuilder(pg);
+    
+            TreeNode root = new TreeNode(gameState, new int[0], 0);
+            builder.buildFullTree(root);
+    
+            ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
+    
+            if (winningPath != null) {
+                System.out.println("Found winning path:");
+                for (TreeNode node : winningPath) {
+                    printNodeDetails(node);
+                }
+            } else {
+                System.out.println("No winning path found.");
+            }
+        }
+    
+        private static void printNodeDetails(TreeNode node) {
+            // Implement how you want to print details of a node
+            // For example, print game state, move, score, etc.
+            System.out.println("GameState: ");
+            TentsAndTreesPuzzle.printSolution(node.gameState);
+            System.out.println("Move: " + TentsAndTreesPuzzle.formatArr(node.move));
+            System.out.println("Score: " + node.score);
+            System.out.println("--------------");
+        
 
     }
 

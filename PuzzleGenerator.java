@@ -78,19 +78,21 @@ public class PuzzleGenerator{
 
         int numRows = field.length;
         int numCols = field[0].length;
-        if (row + 1 < numRows && field[row + 1][col] == 2) return false;
-        else if (row - 1 >= 0 && field[row - 1][col] == 2) return false;
-        else if (col + 1 < numCols && field[row][col + 1] == 2) return false;
-        else if (col - 1 >= 0 && field[row][col - 1] == 2) return false;
-        else if (row + 1 < numRows && col - 1 >= 0 && field[row + 1][col - 1] == 2) return false;
-        else if (row - 1 >= 0 && col - 1 >= 0 && field[row - 1][col - 1] == 2) return false;
-        else if (row + 1 < numRows && col + 1 < numCols && field[row + 1][col + 1] == 2) return false;
-        else if (row - 1 >= 0 && col + 1 < numCols && field[row - 1][col + 1] == 2) return false;
+        if(field[row][col] != 0) return false;
+        else{
+            if (row + 1 < numRows && field[row + 1][col] == 2) return false;
+            else if (row - 1 >= 0 && field[row - 1][col] == 2) return false;
+            else if (col + 1 < numCols && field[row][col + 1] == 2) return false;
+            else if (col - 1 >= 0 && field[row][col - 1] == 2) return false;
+            else if (row + 1 < numRows && col - 1 >= 0 && field[row + 1][col - 1] == 2) return false;
+            else if (row - 1 >= 0 && col - 1 >= 0 && field[row - 1][col - 1] == 2) return false;
+            else if (row + 1 < numRows && col + 1 < numCols && field[row + 1][col + 1] == 2) return false;
+            else if (row - 1 >= 0 && col + 1 < numCols && field[row - 1][col + 1] == 2) return false;
+        }
         return out;
     }
 
     public boolean isValidTree(int row, int col, int[][] field){
-        System.out.println("Invalid");
         boolean out = true;
         
         int numRows = field.length;
