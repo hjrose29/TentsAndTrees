@@ -34,7 +34,7 @@ public class TentsAndTreesPuzzle extends JFrame{
                 if(gameState[i][j] == 2) gameState[i][j] = 0;
             }
         }
-        GameTreeBuilder builder = new GameTreeBuilder(pg);
+        GameTreeBuilder builder = new GameTreeBuilder(pg, 4);
         createGridButtons(pg, gameState, builder);
         
         // Set up the layout
@@ -65,7 +65,15 @@ public class TentsAndTreesPuzzle extends JFrame{
         
     
         TreeNode root = new TreeNode(gameState, new int[0], 0);
-        builder.buildFullTree(root);
+
+
+        final int depth = 20;
+
+        //builder.buildFullTreeParallel(root, depth);
+        builder.buildFullTreeParallel(root, depth);
+        printSolution(root.gameState);
+        System.out.println(root.children.size());
+
         ArrayList<TreeNode> winningPath = builder.findWinningPath(root);
         ImageIcon hintIcon = resizeImageIcon(HINT_IMAGE_PATH, 30, 30);
 
@@ -232,7 +240,7 @@ public class TentsAndTreesPuzzle extends JFrame{
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new TentsAndTreesPuzzle(5);
+                new TentsAndTreesPuzzle(7);
             }
         });
 

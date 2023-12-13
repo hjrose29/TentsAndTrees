@@ -1,6 +1,6 @@
-import java.time.format.TextStyle;
 import java.util.ArrayList;
-
+import java.util.concurrent.RecursiveTask;
+import java.util.concurrent.ForkJoinPool;
 
 
 class TreeNode{
@@ -31,9 +31,15 @@ class TreeNode{
 public class GameTreeBuilder{
 
     PuzzleGenerator pg;
+    ForkJoinPool forkJoinPool;
 
-    public GameTreeBuilder(PuzzleGenerator pg){
+    public GameTreeBuilder(PuzzleGenerator pg, int threads){
         this.pg = pg;
+        if(threads >= Runtime.getRuntime().availableProcessors()){
+            threads = Runtime.getRuntime().availableProcessors();
+        }
+        this.forkJoinPool = new ForkJoinPool(threads);
+        
     }
 
     public TreeNode buildFullTree(TreeNode curNode) {
@@ -170,5 +176,50 @@ public class GameTreeBuilder{
         return (bestChild != null) ? bestChild.move : null;
     }
     
+
+    //Lets try to do this in parallel :o
+
+    public TreeNode buildFullTreeParallel(TreeNode root, int depth) {
+        return forkJoinPool.invoke(new BuildFullTreeTask(root, depth));
+    }
+
+    private class BuildFullTreeTask extends RecursiveTask<TreeNode> {
+        private final TreeNode node;
+        private final int remainingDepth;
+
+        public BuildFullTreeTask(TreeNode node, int remainingDepth) {
+            this.node = node;
+            this.remainingDepth = remainingDepth;
+        }
+
+        @Override
+        protected TreeNode compute() {
+            if (remainingDepth == 0) {
+                return node;
+            }
+
+            ArrayList<BuildFullTreeTask> tasks = new ArrayList<>();
+            ArrayList<int[]> validMoves = validMoves(node.gameState);
+
+            for (int[] move : validMoves) {
+                int[][] newState = applyMove(node.gameState, move);
+                double score = evaluateMove(newState, pg);
+
+                TreeNode childNode = new TreeNode(newState, move, score, node);
+                node.children.add(childNode);
+
+                BuildFullTreeTask task = new BuildFullTreeTask(childNode, remainingDepth - 1);
+                task.fork();
+                tasks.add(task);
+            }
+
+            for (BuildFullTreeTask task : tasks) {
+                task.join();
+            }
+
+            return node;
+        }
+    }
+
 
 }
