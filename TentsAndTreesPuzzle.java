@@ -1,8 +1,9 @@
+//TESTAPSTNASNLOANWRJONOAWRN
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 public class TentsAndTreesPuzzle extends JFrame{
@@ -20,7 +21,7 @@ public class TentsAndTreesPuzzle extends JFrame{
 
 
 
-    public TentsAndTreesPuzzle(int gridSize){
+    public TentsAndTreesPuzzle(int gridSize, int depth){
         this.gridSize = gridSize;
         setTitle("Tents and Trees Puzzle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,9 +66,6 @@ public class TentsAndTreesPuzzle extends JFrame{
         
     
         TreeNode root = new TreeNode(gameState, new int[0], 0);
-
-
-        final int depth = 20;
 
         //builder.buildFullTreeParallel(root, depth);
         builder.buildFullTreeParallel(root, depth);
@@ -217,7 +215,6 @@ public class TentsAndTreesPuzzle extends JFrame{
         for(int i = 0; i < solution.length; i++){
             for(int j = 0; j < solution.length; j++){
                 if(solution[i][j] != field[i][j]) return false;
-
             }
         }
         return true;
@@ -242,16 +239,22 @@ public class TentsAndTreesPuzzle extends JFrame{
 
 
     public static void main(String[] args) {
+        SwingUtilities.invokeLater(() -> {
+            int gridSize = promptForGridSize();
+            int depth = promptForDepth();
 
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new TentsAndTreesPuzzle(7);
-            }
+            new TentsAndTreesPuzzle(gridSize, depth);
         });
+    }
 
-        
+    private static int promptForGridSize() {
+        String input = JOptionPane.showInputDialog("Enter grid size:");
+        return Integer.parseInt(input);
+    }
 
+    private static int promptForDepth() {
+        String input = JOptionPane.showInputDialog("Enter depth of search:");
+        return Integer.parseInt(input);
     }
 
     public static String formatArr(int[] arr){
