@@ -1,5 +1,8 @@
 import java.util.ArrayList;
 import java.util.concurrent.RecursiveTask;
+
+import javax.swing.event.SwingPropertyChangeSupport;
+
 import java.util.concurrent.ForkJoinPool;
 
 
@@ -33,11 +36,14 @@ public class GameTreeBuilder{
     PuzzleGenerator pg;
     ForkJoinPool forkJoinPool;
 
+
     public GameTreeBuilder(PuzzleGenerator pg, int threads){
+
         this.pg = pg;
         if(threads >= Runtime.getRuntime().availableProcessors()){
             threads = Runtime.getRuntime().availableProcessors();
         }
+        System.out.println("Threads: " + threads);
         this.forkJoinPool = new ForkJoinPool(threads);
         
     }
@@ -62,27 +68,33 @@ public class GameTreeBuilder{
 
     public ArrayList<TreeNode> findWinningPath(TreeNode root) {
         ArrayList<TreeNode> currentPath = new ArrayList<>();
-        return findWinningPathRecursive(root, currentPath);
+        return findBestPathRecursive(root, currentPath);
     }
 
-    private ArrayList<TreeNode> findWinningPathRecursive(TreeNode node, ArrayList<TreeNode> currentPath) {
+    private ArrayList<TreeNode> findBestPathRecursive(TreeNode node, ArrayList<TreeNode> currentPath) {
         currentPath.add(node);
-
-        
-        if (TentsAndTreesPuzzle.checkForWin(pg.field, node.gameState)) {
-            return new ArrayList<>(currentPath); // Found a winning path
+    
+        if (node.children.isEmpty()) {
+            // Leaf node reached, return the current path
+            return new ArrayList<>(currentPath);
         }
-
+    
+        ArrayList<TreeNode> bestPath = null;
+        double bestScore = Double.NEGATIVE_INFINITY;
+    
         for (TreeNode child : node.children) {
-            ArrayList<TreeNode> winningPath = findWinningPathRecursive(child, currentPath);
-            if (winningPath != null) {
-                return winningPath; // Found a winning path in the subtree
+            ArrayList<TreeNode> childPath = findBestPathRecursive(child, new ArrayList<>(currentPath));
+    
+            // Compare scores and update the best path
+            if (child.score > bestScore) {
+                bestScore = child.score;
+                bestPath = childPath;
             }
         }
-
-        currentPath.remove(currentPath.size() - 1); // Remove the current node as it didn't lead to a winning path
-        return null; // No winning path found in this subtree
+    
+        return bestPath;
     }
+    
     
 
     public int[][] applyMove(int[][] inState, int[] move){

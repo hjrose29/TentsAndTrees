@@ -19,7 +19,7 @@ public class TentsAndTreesPuzzle extends JFrame{
 
 
 
-    public TentsAndTreesPuzzle(int gridSize, int depth){
+    public TentsAndTreesPuzzle(int gridSize, int depth, int threads){
         this.gridSize = gridSize;
         setTitle("Tents and Trees Puzzle");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -33,7 +33,7 @@ public class TentsAndTreesPuzzle extends JFrame{
                 if(gameState[i][j] == 2) gameState[i][j] = 0;
             }
         }
-        GameTreeBuilder builder = new GameTreeBuilder(pg, 4);
+        GameTreeBuilder builder = new GameTreeBuilder(pg, threads);
         createGridButtons(pg, gameState, builder);
         
         // Set up the layout
@@ -240,8 +240,9 @@ public class TentsAndTreesPuzzle extends JFrame{
         SwingUtilities.invokeLater(() -> {
             int gridSize = promptForGridSize();
             int depth = promptForDepth();
+            int threads = promptForThreads();
 
-            new TentsAndTreesPuzzle(gridSize, depth);
+            new TentsAndTreesPuzzle(gridSize, depth, threads);
         });
     }
 
@@ -254,6 +255,11 @@ public class TentsAndTreesPuzzle extends JFrame{
         String input = JOptionPane.showInputDialog("Enter depth of search:");
         return Integer.parseInt(input);
     }
+    private static int promptForThreads() {
+        String input = JOptionPane.showInputDialog("Enter number of threads:");
+        return Integer.parseInt(input);
+    }
+
 
     public static String formatArr(int[] arr){
         String out = "[ ";
